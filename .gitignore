@@ -1,0 +1,5 @@
+# Private database settings: never upload these
+includes/config.php
+
+# Mac system file
+.DS_Store
