@@ -1,12 +1,9 @@
 <?php
-// includes/header.php
-// Shared top part of every page: <head> + navbar.
-// Each page sets $pageTitle before including this file.
+
 if (!isset($pageTitle)) {
     $pageTitle = "Bread Pitt";
 }
 
-// Name of the current file, like "menu.php" (used to highlight the active link)
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>

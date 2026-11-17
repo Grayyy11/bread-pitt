@@ -1,10 +1,10 @@
 <?php
-// index.php - Home page
+// Home page
 $pageTitle = "Home";
 include "includes/header.php";
 ?>
 
-<!-- HOME / HERO -->
+
 <section class="hero">
   <img src="images/pastries.jpg" alt="Assorted freshly baked pastries">
   <div class="hero-text">
