@@ -1,5 +1,5 @@
 <?php
-// Register page: creates a new customer account
+//  creates a new customer account
 $pageTitle = "Register";
 include "includes/db.php";
 

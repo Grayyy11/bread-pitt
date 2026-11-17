@@ -1,5 +1,4 @@
 <?php
-// contact.php - Contact page
 $pageTitle = "Contact";
 include "includes/header.php";
 ?>

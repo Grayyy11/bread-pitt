@@ -1,5 +1,4 @@
-/* ===== 1. MOBILE MENU (all pages) =====
-   Clicking the ☰ button adds or removes the class "open". */
+//MOBILE MENU 
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
@@ -9,8 +8,8 @@ if (menuToggle && navLinks) {
   });
 }
 
-/* ===== 2. MENU PRODUCTS (Menu page only) =====
-   Later, this list will come from your MySQL database with PHP. */
+//MENU PRODUCTS 
+  
 const filters = document.getElementById("filters");
 const productGrid = document.getElementById("productGrid");
 
@@ -44,7 +43,7 @@ if (filters && productGrid) {
     });
   }
 
-  // Draw the filter buttons
+  // filter buttons
   categories.forEach(function (cat) {
     const btn = document.createElement("button");
     btn.className = "filter-btn" + (cat === "All" ? " active" : "");
@@ -64,7 +63,7 @@ if (filters && productGrid) {
   showProducts("All");
 }
 
-/* ===== 3. CONTACT FORM CHECK (Contact page only) ===== */
+//CONTACT FORM 
 const form = document.getElementById("contactForm");
 const formMessage = document.getElementById("formMessage");
 

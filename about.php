@@ -1,5 +1,4 @@
 <?php
-// about.php - About Us page
 $pageTitle = "About Us";
 include "includes/header.php";
 ?>

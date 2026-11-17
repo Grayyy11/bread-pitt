@@ -1,5 +1,5 @@
 <?php
-// Menu page: shows products from the database
+// shows products from the database
 $pageTitle = "Menu";
 include "includes/db.php";
 include "includes/header.php";
@@ -11,7 +11,7 @@ while ($c = $catResult->fetch_assoc()) {
     $categories[] = $c['name'];
 }
 
-// get the chosen category and the search word
+// get the chosen category 
 $selected = isset($_GET['category']) ? $_GET['category'] : "All";
 if (!in_array($selected, $categories)) {
     $selected = "All";
@@ -57,7 +57,7 @@ $result = $stmt->get_result();
   <div class="wrap">
     <h1 class="title">Our menu</h1>
 
-    <!-- search box -->
+    
     <form class="search-form" method="get" action="menu.php">
       <input type="hidden" name="category" value="<?php echo htmlspecialchars($selected); ?>">
       <input type="text" name="search" placeholder="Search products..."
@@ -65,7 +65,7 @@ $result = $stmt->get_result();
       <button type="submit" class="btn">Search</button>
     </form>
 
-    <!-- category buttons -->
+    // category buttons
     <div class="filters">
       <?php foreach ($categories as $cat) { ?>
         <a class="filter-btn <?php if ($cat == $selected) echo 'active'; ?>"
@@ -73,7 +73,7 @@ $result = $stmt->get_result();
       <?php } ?>
     </div>
 
-    <!-- product cards -->
+    // products boxes or card
     <div class="grid">
       <?php while ($row = $result->fetch_assoc()) { ?>
         <div class="card product">
