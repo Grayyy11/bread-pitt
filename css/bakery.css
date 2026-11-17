@@ -1,4 +1,4 @@
-/* ===== COLORS (change them here) ===== */
+/* COLORS */
 :root {
   --cream: #f5f0e6;
   --card: #fffaf3;
@@ -9,7 +9,7 @@
   --soft-brown: #7a6a55;
 }
 
-/* ===== BASICS ===== */
+/* BASICS */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
@@ -28,7 +28,7 @@ section { padding: 50px 20px; }
 .wrap { max-width: 1000px; margin: 0 auto; }
 .title { text-align: center; margin-top: 0; }
 
-/* ===== NAVBAR ===== */
+/* NAVBAR  */
 .navbar {
   background: var(--brown);
   position: sticky;
@@ -53,7 +53,7 @@ section { padding: 50px 20px; }
   cursor: pointer;
 }
 
-/* ===== HOME / HERO ===== */
+/* HOME / HERO */
 .hero { position: relative; padding: 0; }
 .hero img {
   width: 100%;
@@ -90,7 +90,7 @@ section { padding: 50px 20px; }
 }
 .btn:hover { background: var(--dark-caramel); }
 
-/* ===== CARDS (features, products, team) ===== */
+/* CARDS (features, products, team) */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -107,7 +107,7 @@ section { padding: 50px 20px; }
 .card:hover { transform: translateY(-5px); box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2); }
 .card h3 { margin-top: 0; }
 
-/* ===== MENU ===== */
+/* MENU*/
 .filters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
 .filter-btn {
   background: var(--card);
@@ -124,7 +124,7 @@ section { padding: 50px 20px; }
 .product .price { color: var(--caramel); font-weight: bold; font-size: 1.1em; margin: 0; }
 .product p { margin: 6px 0; }
 
-/* ===== ABOUT ===== */
+/*ABOUT */
 .banner { width: 100%; height: 220px; object-fit: cover; border-radius: 10px; margin-bottom: 25px; background: var(--border); }
 .member { text-align: center; }
 .member img {
@@ -137,7 +137,7 @@ section { padding: 50px 20px; }
 .member h3 { margin-bottom: 4px; }
 .member p { margin: 4px 0; }
 
-/* ===== CONTACT ===== */
+/*CONTACT*/
 form { max-width: 520px; margin: 0 auto; }
 label { display: block; margin: 14px 0 4px; font-weight: bold; }
 input, textarea {
@@ -156,10 +156,10 @@ input:focus, textarea:focus, button:focus-visible, a:focus-visible {
 .message.ok { display: block; background: #e3f1dc; color: #2f5a1f; }
 .message.error { display: block; background: #f8dcd6; color: #8a2a1a; }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 footer { text-align: center; padding: 25px; color: var(--soft-brown); font-size: 0.9em; }
 
-/* ===== PHONES ===== */
+/* PHONES */
 @media (max-width: 700px) {
   .menu-toggle { display: block; }
   .nav-links {

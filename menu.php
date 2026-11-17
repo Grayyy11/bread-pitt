@@ -65,7 +65,7 @@ $result = $stmt->get_result();
       <button type="submit" class="btn">Search</button>
     </form>
 
-    // category buttons
+    
     <div class="filters">
       <?php foreach ($categories as $cat) { ?>
         <a class="filter-btn <?php if ($cat == $selected) echo 'active'; ?>"
@@ -73,7 +73,7 @@ $result = $stmt->get_result();
       <?php } ?>
     </div>
 
-    // products boxes or card
+    
     <div class="grid">
       <?php while ($row = $result->fetch_assoc()) { ?>
         <div class="card product">
@@ -103,4 +103,4 @@ $result = $stmt->get_result();
   </div>
 </section>
 
-<?php include "includes/footer.php"; ?>
+<?php include "includes/footer.php"; ?>ßßß
