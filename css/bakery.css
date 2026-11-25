@@ -190,3 +190,60 @@ a.filter-btn {
   display: inline-block;
   text-decoration: none;
 }
+/*  ADMIN TABLE */
+.table-wrap { overflow-x: auto; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+.admin-table th, .admin-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.admin-table th { background: var(--brown); color: #fff; }
+.admin-table a { color: var(--caramel); font-weight: bold; }
+
+.thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+/*PRODUCT FORM*/
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1em;
+  background: var(--card);
+}
+.check-label { display: flex; align-items: center; gap: 8px; font-weight: normal; }
+.check-label input { width: auto; }
+/* DELETE BUTTON */
+.btn-danger { background: #a83232; }
+.btn-danger:hover { background: #7f2424; }
+/*CART*/
+.btn-small { padding: 8px 16px; font-size: 0.9em; }
+.cart-total { text-align: right; font-size: 1.3em; font-weight: bold; color: var(--caramel); }
+
+/*USER MANAGEMENT*/
+.inline-form { display: flex; gap: 8px; align-items: center; }
+/*STAFF PAGE*/
+.small-input { width: 100px; padding: 6px; }
+
+/*  MY ORDERS  */
+.order-box { margin-bottom: 25px; }
+.order-box:hover { transform: none; }
+.order-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 0; }
+
+/* SEARCH BOX AND SOLD OUT */
+.search-form { display: flex; gap: 10px; max-width: 500px; margin: 0 auto 20px; }
+.search-form input { flex: 1; }
+.sold-out { color: #8a2a1a; font-weight: bold; margin: 0; }

@@ -34,8 +34,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <?php if ($_SESSION['role'] == "admin") { ?>
           <li><a href="admin.php" <?php if ($currentPage == "admin.php") echo 'class="active"'; ?>>Admin</a></li> <?php } ?>
       <li><a href="users.php" <?php if ($currentPage == "users.php") echo 'class="active"'; ?>>Users</a></li>
-                <?php if ($_SESSION['role'] == "customer") { ?>
+         <?php if ($_SESSION['role'] == "customer") { ?>
           <li><a href="cart.php" <?php if ($currentPage == "cart.php") echo 'class="active"'; ?>>Cart</a></li>
+          <li><a href="my_orders.php" <?php if ($currentPage == "my_orders.php") echo 'class="active"'; ?>>My Orders</a></li>
+        <?php } ?>
+        <?php if ($_SESSION['role'] == "staff") { ?>
+          <li><a href="staff.php" <?php if ($currentPage == "staff.php") echo 'class="active"'; ?>>Staff</a></li>
+        <?php } ?>
+                <?php if ($_SESSION['role'] == "staff" || $_SESSION['role'] == "admin") { ?>
+          <li><a href="orders.php" <?php if ($currentPage == "orders.php") echo 'class="active"'; ?>>Orders</a></li>
         <?php } ?>
         <li><a href="logout.php">Logout (<?php echo htmlspecialchars($_SESSION['full_name']); ?>)</a></li>
       <?php } else { ?>

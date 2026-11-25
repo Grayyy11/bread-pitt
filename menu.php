@@ -56,6 +56,10 @@ $result = $stmt->get_result();
 <section>
   <div class="wrap">
     <h1 class="title">Our menu</h1>
+        <?php if (isset($_SESSION['message'])) { ?>
+      <p class="message ok"><?php echo htmlspecialchars($_SESSION['message']); ?></p>
+      <?php unset($_SESSION['message']); ?>
+    <?php } ?>
 
     
     <form class="search-form" method="get" action="menu.php">
@@ -90,8 +94,15 @@ $result = $stmt->get_result();
           <p><?php echo htmlspecialchars($row['description']); ?></p>
           <p class="price">&#8369;<?php echo number_format($row['price'], 2); ?></p>
 
-          <?php if ($row['is_available'] == 0) { ?>
+              <?php if ($row['is_available'] == 0 || $row['stock_qty'] < 1) { ?>
             <p class="sold-out">Sold out</p>
+          <?php } elseif (!isLoggedIn()) { ?>
+            <a href="login.php" class="btn btn-small">Login to order</a>
+          <?php } elseif ($_SESSION['role'] == "customer") { ?>
+            <form method="post" action="add_to_cart.php">
+              <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+              <button type="submit" class="btn btn-small">Add to cart</button>
+            </form>
           <?php } ?>
         </div>
       <?php } ?>
@@ -103,4 +114,4 @@ $result = $stmt->get_result();
   </div>
 </section>
 
-<?php include "includes/footer.php"; ?>ßßß
+<?php include "includes/footer.php"; ?>ßßßß

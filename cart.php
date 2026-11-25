@@ -87,7 +87,7 @@ include "includes/header.php";
       </div>
 
       <p class="cart-total">Total: &#8369;<?php echo number_format($total, 2); ?></p>
-
+      <p style="text-align:right"><a href="checkout.php" class="btn">Checkout</a></p>
     <?php } ?>
   </div>
 </section>
