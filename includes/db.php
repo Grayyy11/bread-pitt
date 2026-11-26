@@ -1,17 +1,27 @@
 <?php
-// connect php to mysql database
+// Connects PHP to the MySQL database
 
-
-//private settings
+// load the private settings (host, port, user, password, database)
 include __DIR__ . "/config.php";
 
-
-mysqli_report(MYSQLI_REPORT_OFF);
-
-$conn = new mysqli($host, $user, $pass, $db, $port);
-
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
+// PDO connection 
+try {
+    $pdo = new PDO(
+        "mysql:host=127.0.0.1;port=$port;dbname=$db;charset=utf8mb4",
+        $user,
+        $pass
+    );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    exit("Database connection failed.");
 }
 
+// old MySQLi connection: pages not converted yet still use it
+mysqli_report(MYSQLI_REPORT_OFF);
+$conn = new mysqli("127.0.0.1", $user, $pass, $db, $port);
+if ($conn->connect_error) {
+    exit("Database connection failed.");
+}
 $conn->set_charset("utf8mb4");

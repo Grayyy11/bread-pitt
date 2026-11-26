@@ -9,13 +9,12 @@ requireRole(["admin"]);
 $pageTitle = "Delete Product";
 
 // get the product id from the address or the form
-$id = isset($_REQUEST['id']) ? (int)$_REQUEST['id'] : 0;
+$id = (int)($_REQUEST['id'] ?? 0);
 
 // find the product
-$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$product = $stmt->get_result()->fetch_assoc();
+$stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+$stmt->execute([$id]);
+$product = $stmt->fetch();
 
 if (!$product) {
     die("Product not found.");
@@ -23,17 +22,14 @@ if (!$product) {
 
 // delete only after the confirm button is clicked
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+    $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
+    $stmt->execute([$id]);
 
     // delete the picture file if no other product uses it
     if (!empty($product['image'])) {
-        $stmt = $conn->prepare("SELECT id FROM products WHERE image = ?");
-        $stmt->bind_param("s", $product['image']);
-        $stmt->execute();
-        $stmt->store_result();
-        if ($stmt->num_rows == 0) {
+        $stmt = $pdo->prepare("SELECT id FROM products WHERE image = ?");
+        $stmt->execute([$product['image']]);
+        if (!$stmt->fetch()) {
             $file = "images/products/" . basename($product['image']);
             if (file_exists($file)) {
                 unlink($file);

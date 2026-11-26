@@ -1,18 +1,18 @@
 <?php
-// Admin page
+// Admin page: lists all products (admin only)
 include_once "includes/db.php";
 include_once "includes/auth.php";
 
-// Only admins can open 
+// only admins can open this page
 requireRole(["admin"]);
 
 $pageTitle = "Admin";
 
 // get the products with their category name
-$result = $conn->query("SELECT p.*, c.name AS category_name
-                        FROM products p
-                        JOIN categories c ON c.id = p.category_id
-                        ORDER BY p.id");
+$products = $pdo->query("SELECT p.*, c.name AS category_name
+                         FROM products p
+                         JOIN categories c ON c.id = p.category_id
+                         ORDER BY p.id")->fetchAll();
 
 include "includes/header.php";
 ?>
@@ -36,7 +36,7 @@ include "includes/header.php";
           <th>Actions</th>
         </tr>
 
-        <?php while ($row = $result->fetch_assoc()) { ?>
+        <?php foreach ($products as $row) { ?>
           <tr>
             <td>
               <?php if (!empty($row['image'])) { ?>

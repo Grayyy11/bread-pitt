@@ -10,13 +10,12 @@ $pageTitle = "Edit Product";
 $errors = [];
 
 // get the product id from the address
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$id = (int)($_GET['id'] ?? 0);
 
 // find the product
-$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$product = $stmt->get_result()->fetch_assoc();
+$stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+$stmt->execute([$id]);
+$product = $stmt->fetch();
 
 if (!$product) {
     die("Product not found.");
@@ -31,15 +30,15 @@ $category_id = $product['category_id'];
 $is_available = $product['is_available'];
 
 // get the categories for the dropdown
-$categories = $conn->query("SELECT id, name FROM categories ORDER BY id");
+$categories = $pdo->query("SELECT id, name FROM categories ORDER BY id")->fetchAll();
 
 // run only when the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $name = trim($_POST['name']);
-    $description = trim($_POST['description']);
-    $price = $_POST['price'];
-    $stock_qty = $_POST['stock_qty'];
-    $category_id = $_POST['category_id'];
+    $name = trim($_POST['name'] ?? "");
+    $description = trim($_POST['description'] ?? "");
+    $price = $_POST['price'] ?? "";
+    $stock_qty = $_POST['stock_qty'] ?? "";
+    $category_id = $_POST['category_id'] ?? "";
     $is_available = isset($_POST['is_available']) ? 1 : 0;
 
     // check the form
@@ -85,12 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             move_uploaded_file($_FILES['image']['tmp_name'], "images/products/" . $imageName);
         }
 
-        $stmt = $conn->prepare("UPDATE products
-                                SET name = ?, description = ?, price = ?, image = ?,
-                                    category_id = ?, is_available = ?, stock_qty = ?
-                                WHERE id = ?");
-        $stmt->bind_param("ssdsiiii", $name, $description, $price, $imageName, $category_id, $is_available, $stock_qty, $id);
-        $stmt->execute();
+        $stmt = $pdo->prepare("UPDATE products
+                               SET name = ?, description = ?, price = ?, image = ?,
+                                   category_id = ?, is_available = ?, stock_qty = ?
+                               WHERE id = ?");
+        $stmt->execute([$name, $description, $price, $imageName, $category_id, $is_available, $stock_qty, $id]);
 
         // save in the audit log
         logAction($conn, $_SESSION['user_id'], "edit_product", "Edited product: " . $name);
@@ -118,7 +116,7 @@ include "includes/header.php";
       <label for="category_id">Category</label>
       <select id="category_id" name="category_id">
         <option value="">Choose a category</option>
-        <?php while ($c = $categories->fetch_assoc()) { ?>
+        <?php foreach ($categories as $c) { ?>
           <option value="<?php echo $c['id']; ?>" <?php if ($c['id'] == $category_id) echo "selected"; ?>>
             <?php echo htmlspecialchars($c['name']); ?>
           </option>

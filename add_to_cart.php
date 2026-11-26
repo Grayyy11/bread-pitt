@@ -12,14 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
     exit;
 }
 
-$product_id = (int)$_POST['product_id'];
+$product_id = (int)($_POST['product_id'] ?? 0);
 $user_id = $_SESSION['user_id'];
 
 // find the product
-$stmt = $conn->prepare("SELECT name, is_available, stock_qty FROM products WHERE id = ?");
-$stmt->bind_param("i", $product_id);
-$stmt->execute();
-$product = $stmt->get_result()->fetch_assoc();
+$stmt = $pdo->prepare("SELECT name, is_available, stock_qty FROM products WHERE id = ?");
+$stmt->execute([$product_id]);
+$product = $stmt->fetch();
 
 if (!$product) {
     $_SESSION['message'] = "Product not found.";
@@ -27,11 +26,10 @@ if (!$product) {
     $_SESSION['message'] = $product['name'] . " is sold out.";
 } else {
     // add it, or add 1 to the quantity if it is already in the cart
-    $stmt = $conn->prepare("INSERT INTO cart_items (user_id, product_id, quantity)
-                            VALUES (?, ?, 1)
-                            ON DUPLICATE KEY UPDATE quantity = quantity + 1");
-    $stmt->bind_param("ii", $user_id, $product_id);
-    $stmt->execute();
+    $stmt = $pdo->prepare("INSERT INTO cart_items (user_id, product_id, quantity)
+                           VALUES (?, ?, 1)
+                           ON DUPLICATE KEY UPDATE quantity = quantity + 1");
+    $stmt->execute([$user_id, $product_id]);
 
     logAction($conn, $user_id, "add_to_cart", "Added to cart: " . $product['name']);
     $_SESSION['message'] = $product['name'] . " was added to your cart.";

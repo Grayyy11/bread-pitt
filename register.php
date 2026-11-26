@@ -1,7 +1,7 @@
 <?php
-//  creates a new customer account
+// Register page: creates a new customer account
 $pageTitle = "Register";
-include "includes/db.php";
+include_once "includes/db.php";
 
 $errors = [];
 $success = false;
@@ -10,12 +10,12 @@ $email = "";
 
 // run only when the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $full_name = trim($_POST['full_name']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $confirm = $_POST['confirm'];
+    $full_name = trim($_POST['full_name'] ?? "");
+    $email = trim($_POST['email'] ?? "");
+    $password = $_POST['password'] ?? "";
+    $confirm = $_POST['confirm'] ?? "";
 
-    // checks the form
+    // check the form
     if ($full_name == "" || $email == "" || $password == "") {
         $errors[] = "Please fill in all fields.";
     }
@@ -31,22 +31,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     // check if the email is already used
     if (empty($errors)) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-        if ($stmt->num_rows > 0) {
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
             $errors[] = "That email is already registered.";
         }
     }
 
-    // save the new user 
+    // save the new user (role 3 = customer)
     if (empty($errors)) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $role_id = 3;
-        $stmt = $conn->prepare("INSERT INTO users (full_name, email, password_hash, role_id) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("sssi", $full_name, $email, $hash, $role_id);
-        $stmt->execute();
+
+        $stmt = $pdo->prepare("INSERT INTO users (full_name, email, password_hash, role_id) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$full_name, $email, $hash, $role_id]);
         $success = true;
     }
 }
