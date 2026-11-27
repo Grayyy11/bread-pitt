@@ -83,3 +83,24 @@ include "includes/header.php";
                 <?php } ?>
               </td>
               <td><?php echo htmlspecialchars($row['name']); ?></td>
+              <td><?php echo htmlspecialchars($row['category_name']); ?></td>
+              <td>
+                <input type="number" name="stock_qty" min="0" class="small-input"
+                       value="<?php echo $row['stock_qty']; ?>">
+              </td>
+              <td>
+                <select name="is_available" class="small-input">
+                  <option value="1" <?php if ($row['is_available'] == 1) echo "selected"; ?>>Available</option>
+                  <option value="0" <?php if ($row['is_available'] == 0) echo "selected"; ?>>Sold out</option>
+                </select>
+              </td>
+              <td><button type="submit" class="btn btn-small">Update</button></td>
+            </form>
+          </tr>
+        <?php } ?>
+      </table>
+    </div>
+  </div>
+</section>
+
+<?php include "includes/footer.php"; ?>
