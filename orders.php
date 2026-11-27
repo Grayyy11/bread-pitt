@@ -13,14 +13,13 @@ $statuses = ["pending", "preparing", "ready", "completed", "cancelled"];
 
 // run only when an Update button is clicked
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $id = (int)$_POST['id'];
-    $status = $_POST['status'];
+    $id = (int)($_POST['id'] ?? 0);
+    $status = $_POST['status'] ?? "";
 
     // only accept a status from our list
     if (in_array($status, $statuses)) {
-        $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
-        $stmt->bind_param("si", $status, $id);
-        $stmt->execute();
+        $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $stmt->execute([$status, $id]);
 
         logAction($conn, $_SESSION['user_id'], "update_order", "Order #" . $id . " set to " . $status);
         $_SESSION['message'] = "Order #" . $id . " is now " . $status . ".";
@@ -31,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 }
 
 // get the chosen status filter
-$selected = isset($_GET['status']) ? $_GET['status'] : "";
+$selected = $_GET['status'] ?? "";
 if ($selected != "" && !in_array($selected, $statuses)) {
     $selected = "";
 }
@@ -40,17 +39,21 @@ if ($selected != "" && !in_array($selected, $statuses)) {
 $sql = "SELECT o.*, u.full_name
         FROM orders o
         JOIN users u ON u.id = o.user_id";
+$params = [];
 
 if ($selected != "") {
-    $sql .= " WHERE o.status = ? ORDER BY o.id DESC";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $selected);
-} else {
-    $sql .= " ORDER BY o.id DESC";
-    $stmt = $conn->prepare($sql);
+    $sql .= " WHERE o.status = ?";
+    $params[] = $selected;
 }
-$stmt->execute();
-$orders = $stmt->get_result();
+
+$sql .= " ORDER BY o.id DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$orders = $stmt->fetchAll();
+
+// prepare the query for the items of an order (used once per order)
+$itemStmt = $pdo->prepare("SELECT product_name, price, quantity FROM order_items WHERE order_id = ?");
 
 include "includes/header.php";
 ?>
@@ -77,11 +80,11 @@ include "includes/header.php";
       <button type="submit" class="btn">Filter</button>
     </form>
 
-    <?php if ($orders->num_rows == 0) { ?>
+    <?php if (count($orders) == 0) { ?>
       <p style="text-align:center">No orders found.</p>
     <?php } ?>
 
-    <?php while ($order = $orders->fetch_assoc()) { ?>
+    <?php foreach ($orders as $order) { ?>
       <div class="card order-box">
 
         <p class="order-head">
@@ -92,10 +95,8 @@ include "includes/header.php";
 
         <?php
           // get the items of this order
-          $stmt = $conn->prepare("SELECT product_name, price, quantity FROM order_items WHERE order_id = ?");
-          $stmt->bind_param("i", $order['id']);
-          $stmt->execute();
-          $items = $stmt->get_result();
+          $itemStmt->execute([$order['id']]);
+          $items = $itemStmt->fetchAll();
         ?>
 
         <div class="table-wrap">
@@ -106,7 +107,7 @@ include "includes/header.php";
               <th>Quantity</th>
               <th>Subtotal</th>
             </tr>
-            <?php while ($item = $items->fetch_assoc()) { ?>
+            <?php foreach ($items as $item) { ?>
               <tr>
                 <td><?php echo htmlspecialchars($item['product_name']); ?></td>
                 <td>&#8369;<?php echo number_format($item['price'], 2); ?></td>

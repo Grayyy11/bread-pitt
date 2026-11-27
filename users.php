@@ -8,9 +8,16 @@ requireRole(["admin"]);
 
 $pageTitle = "Users";
 
+// get the roles for the dropdown
+$roles = $pdo->query("SELECT id, name FROM roles ORDER BY id")->fetchAll();
+
+// the role ids that exist
+$roleIds = array_column($roles, 'id');
+
 // run only when a button is clicked
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $id = (int)$_POST['id'];
+    $id = (int)($_POST['id'] ?? 0);
+    $action = $_POST['action'] ?? "";
 
     // an admin cannot change their own account
     if ($id == $_SESSION['user_id']) {
@@ -19,28 +26,28 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         exit;
     }
 
-    // find the user for the audit log
-    $stmt = $conn->prepare("SELECT full_name FROM users WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $u = $stmt->get_result()->fetch_assoc();
+    // find the user for the message and the audit log
+    $stmt = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+    $stmt->execute([$id]);
+    $u = $stmt->fetch();
 
     if ($u) {
-        if ($_POST['action'] == "role") {
-            // change the role
-            $role_id = (int)$_POST['role_id'];
-            $stmt = $conn->prepare("UPDATE users SET role_id = ? WHERE id = ?");
-            $stmt->bind_param("ii", $role_id, $id);
-            $stmt->execute();
+        if ($action == "role") {
+            // change the role (only to a role that exists)
+            $role_id = (int)($_POST['role_id'] ?? 0);
 
-            logAction($conn, $_SESSION['user_id'], "change_role", "Changed role of " . $u['full_name']);
-            $_SESSION['message'] = "Role updated for " . $u['full_name'] . ".";
+            if (in_array($role_id, $roleIds)) {
+                $stmt = $pdo->prepare("UPDATE users SET role_id = ? WHERE id = ?");
+                $stmt->execute([$role_id, $id]);
 
-        } elseif ($_POST['action'] == "toggle") {
+                logAction($conn, $_SESSION['user_id'], "change_role", "Changed role of " . $u['full_name']);
+                $_SESSION['message'] = "Role updated for " . $u['full_name'] . ".";
+            }
+
+        } elseif ($action == "toggle") {
             // switch between active and deactivated
-            $stmt = $conn->prepare("UPDATE users SET is_active = 1 - is_active WHERE id = ?");
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
+            $stmt = $pdo->prepare("UPDATE users SET is_active = 1 - is_active WHERE id = ?");
+            $stmt->execute([$id]);
 
             logAction($conn, $_SESSION['user_id'], "toggle_user", "Changed status of " . $u['full_name']);
             $_SESSION['message'] = "Status updated for " . $u['full_name'] . ".";
@@ -51,18 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     exit;
 }
 
-// get the roles for the dropdown
-$roles = [];
-$roleResult = $conn->query("SELECT id, name FROM roles ORDER BY id");
-while ($r = $roleResult->fetch_assoc()) {
-    $roles[] = $r;
-}
-
 // get all users with their role name
-$result = $conn->query("SELECT u.*, r.name AS role_name
-                        FROM users u
-                        JOIN roles r ON r.id = u.role_id
-                        ORDER BY u.id");
+$users = $pdo->query("SELECT u.*, r.name AS role_name
+                      FROM users u
+                      JOIN roles r ON r.id = u.role_id
+                      ORDER BY u.id")->fetchAll();
 
 include "includes/header.php";
 ?>
@@ -86,7 +86,7 @@ include "includes/header.php";
           <th>Actions</th>
         </tr>
 
-        <?php while ($row = $result->fetch_assoc()) { ?>
+        <?php foreach ($users as $row) { ?>
           <tr>
             <td><?php echo htmlspecialchars($row['full_name']); ?></td>
             <td><?php echo htmlspecialchars($row['email']); ?></td>

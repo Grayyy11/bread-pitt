@@ -10,28 +10,30 @@ $pageTitle = "Staff";
 
 // run only when an Update button is clicked
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $id = (int)$_POST['id'];
-    $stock_qty = $_POST['stock_qty'];
-    $is_available = (int)$_POST['is_available'];
+    $id = (int)($_POST['id'] ?? 0);
+    $stock_qty = $_POST['stock_qty'] ?? "";
+    $is_available = (int)($_POST['is_available'] ?? 0);
 
     if (!ctype_digit((string)$stock_qty)) {
         $_SESSION['message'] = "Stock must be a whole number.";
     } else {
-        // change only the stock and availability
-        $stmt = $conn->prepare("UPDATE products SET stock_qty = ?, is_available = ? WHERE id = ?");
-        $stmt->bind_param("iii", $stock_qty, $is_available, $id);
-        $stmt->execute();
+        // find the product name for the message and the audit log
+        $stmt = $pdo->prepare("SELECT name FROM products WHERE id = ?");
+        $stmt->execute([$id]);
+        $p = $stmt->fetch();
 
-        // find the name for the audit log
-        $stmt = $conn->prepare("SELECT name FROM products WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $p = $stmt->get_result()->fetch_assoc();
+        if ($p) {
+            // change only the stock and availability
+            $stmt = $pdo->prepare("UPDATE products SET stock_qty = ?, is_available = ? WHERE id = ?");
+            $stmt->execute([$stock_qty, $is_available, $id]);
 
-        $status = $is_available ? "available" : "sold out";
-        logAction($conn, $_SESSION['user_id'], "update_availability", $p['name'] . ": stock " . $stock_qty . ", " . $status);
+            $status = $is_available ? "available" : "sold out";
+            logAction($conn, $_SESSION['user_id'], "update_availability", $p['name'] . ": stock " . $stock_qty . ", " . $status);
 
-        $_SESSION['message'] = $p['name'] . " was updated.";
+            $_SESSION['message'] = $p['name'] . " was updated.";
+        } else {
+            $_SESSION['message'] = "Product not found.";
+        }
     }
 
     header("Location: staff.php");
@@ -39,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 }
 
 // get all products with their category
-$result = $conn->query("SELECT p.*, c.name AS category_name
-                        FROM products p
-                        JOIN categories c ON c.id = p.category_id
-                        ORDER BY p.id");
+$products = $pdo->query("SELECT p.*, c.name AS category_name
+                         FROM products p
+                         JOIN categories c ON c.id = p.category_id
+                         ORDER BY p.id")->fetchAll();
 
 include "includes/header.php";
 ?>
@@ -67,7 +69,7 @@ include "includes/header.php";
           <th></th>
         </tr>
 
-        <?php while ($row = $result->fetch_assoc()) { ?>
+        <?php foreach ($products as $row) { ?>
           <tr>
             <!-- each row is its own small form -->
             <form method="post" action="staff.php">
@@ -81,24 +83,3 @@ include "includes/header.php";
                 <?php } ?>
               </td>
               <td><?php echo htmlspecialchars($row['name']); ?></td>
-              <td><?php echo htmlspecialchars($row['category_name']); ?></td>
-              <td>
-                <input type="number" name="stock_qty" min="0" class="small-input"
-                       value="<?php echo $row['stock_qty']; ?>">
-              </td>
-              <td>
-                <select name="is_available" class="small-input">
-                  <option value="1" <?php if ($row['is_available'] == 1) echo "selected"; ?>>Available</option>
-                  <option value="0" <?php if ($row['is_available'] == 0) echo "selected"; ?>>Sold out</option>
-                </select>
-              </td>
-              <td><button type="submit" class="btn btn-small">Update</button></td>
-            </form>
-          </tr>
-        <?php } ?>
-      </table>
-    </div>
-  </div>
-</section>
-
-<?php include "includes/footer.php"; ?>
