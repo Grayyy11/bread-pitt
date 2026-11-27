@@ -34,6 +34,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <?php if ($_SESSION['role'] == "admin") { ?>
           <li><a href="admin.php" <?php if ($currentPage == "admin.php") echo 'class="active"'; ?>>Admin</a></li> <?php } ?>
       <li><a href="users.php" <?php if ($currentPage == "users.php") echo 'class="active"'; ?>>Users</a></li>
+                <li><a href="audit.php" <?php if ($currentPage == "audit.php") echo 'class="active"'; ?>>Audit</a></li>
          <?php if ($_SESSION['role'] == "customer") { ?>
           <li><a href="cart.php" <?php if ($currentPage == "cart.php") echo 'class="active"'; ?>>Cart</a></li>
           <li><a href="my_orders.php" <?php if ($currentPage == "my_orders.php") echo 'class="active"'; ?>>My Orders</a></li>
